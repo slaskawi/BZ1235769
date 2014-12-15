@@ -51,7 +51,7 @@ public class JsfController {
    }
    
    private Cache<String, String> getEmbeddedCache() {
-      return manager.getCache("FileStoreCache");
+      return manager.getCache("FileCacheStore");
    }
    
    @PreDestroy
@@ -72,6 +72,15 @@ public class JsfController {
 
    public void add() {
       getEmbeddedCache().put(cacheView.getKey(), cacheView.getValue());
+   }
+
+   public void get() {
+      String value = getEmbeddedCache().get(cacheView.getKey());
+      if(value==null) {
+         cacheView.setValue("NOT AVAILABLE");
+      }else{
+         cacheView.setValue(value);
+      }
    }
 
    public void delete() {

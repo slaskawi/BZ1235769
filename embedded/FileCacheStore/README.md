@@ -16,11 +16,17 @@ Build and Run
 
         mvn clean package
 
-2. Start a WildFly or EAP server and deploy the application
+2. Install the Infinispan/JDG modules to WildFly or EAP server and deploy the application
 
-       cp web/target/embeddedFileStoreApp-web.war SErVER/standalone/deployments
+       unzip jboss-datagrid-6.3.0-eap-modules-library.zip
+       mv jboss-datagrid-6.3.0-eap-modules-library/modules/org SERVER/modules
+       cp web/target/embeddedFileStoreApp-web.war SERVER/standalone/deployments
 
-3. Open a Browser and access the application
+3. Start a WildFly or EAP server and deploy the application
+
+       cp web/target/embeddedFileStoreApp-web.war SERVER/standalone/deployments
+
+4. Open a Browser and access the application
 
       http://localhost:8080/embeddedFileStoreApp-web
 
