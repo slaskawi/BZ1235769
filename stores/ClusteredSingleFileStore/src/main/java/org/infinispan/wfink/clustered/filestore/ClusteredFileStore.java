@@ -40,28 +40,50 @@ public class ClusteredFileStore {
    private final String location;
    private final boolean preload;
    private final boolean passivation;
+   private final boolean shared;
+   private final boolean fetchInMemory;
+   private final boolean fetchPersistent;
+   private final int evictionMaxEntries;
    private Cache<String, String> cache;
 
-   public ClusteredFileStore(Console con, CacheMode cacheMode, String location, boolean preload, boolean passivation) {
+   public ClusteredFileStore(Console con, CacheMode cacheMode, String location, boolean preload, boolean passivation, boolean shared, boolean fetchInMemory, boolean fetchPersistent, int maxEntries) {
       this.con = con;
       this.cacheMode = cacheMode;
       this.location = location;
       this.preload = preload;
       this.passivation = passivation;
+      this.shared = shared;
+      this.fetchInMemory = fetchInMemory;
+      this.fetchPersistent = fetchPersistent;
+      this.evictionMaxEntries = maxEntries;
       
 
-      GlobalConfiguration glob = new GlobalConfigurationBuilder().clusteredDefault() // Builds a default clustered
+      final GlobalConfiguration glob = new GlobalConfigurationBuilder().clusteredDefault() // Builds a default clustered
             .transport().addProperty("configurationFile", "jgroups-app.xml")
             .clusterName("ClusteredFileStore")
             .globalJmxStatistics().enable() // This method enables the jmx statistics of the global configuration
             .build(); // Builds the GlobalConfiguration object
-      Configuration loc = new ConfigurationBuilder().jmxStatistics().enable() // Enable JMX statistics
-            .clustering().cacheMode(cacheMode).hash().numOwners(2)
+      
+      final Configuration loc;
+      if(this.evictionMaxEntries > 0) {
+         loc = new ConfigurationBuilder().jmxStatistics().enable() // Enable JMX statistics
+            .clustering().cacheMode(cacheMode).hash().numOwners(2).stateTransfer().chunkSize(512).fetchInMemoryState(fetchInMemory)
             .transaction().transactionManagerLookup(new GenericTransactionManagerLookup())
             .persistence().passivation(passivation).addSingleFileStore()
-              .preload(preload).shared(false).fetchPersistentState(true)
+              .preload(preload).shared(shared).fetchPersistentState(fetchPersistent)
               .location(location)
-            .build();
+              .build();
+      }else{
+         loc = new ConfigurationBuilder().jmxStatistics().enable() // Enable JMX statistics
+               .clustering().cacheMode(cacheMode).hash().numOwners(2).stateTransfer().chunkSize(512).fetchInMemoryState(fetchInMemory)
+               .transaction().transactionManagerLookup(new GenericTransactionManagerLookup())
+               .persistence().passivation(passivation).addSingleFileStore()
+                 .preload(preload).shared(shared).fetchPersistentState(fetchPersistent)
+                 .location(location)
+                 .eviction().maxEntries(evictionMaxEntries)
+                 .build();
+      }
+      
       cacheManager = new DefaultCacheManager(glob, loc, true);
 
       cache = cacheManager.getCache();
@@ -186,10 +208,16 @@ public class ClusteredFileStore {
    }
    
    private void printMode() {
-      con.printf("\nCacheMode          : %s\n", cacheMode);
-      con.printf("FileStore location : %s\n", location);
-      con.printf("preloaded          : %b\n", preload);
-      con.printf("passivation        : %b\n", passivation);
+      con.printf("\nCacheMode           : %s\n", cacheMode);
+      con.printf("FileStore location  : %s\n", location);
+      con.printf("preloaded           : %b\n", preload);
+      con.printf("passivation         : %b\n", passivation);
+      con.printf("shared store        : %b\n", shared );
+      con.printf("fetch in memory     : %b\n", fetchInMemory);
+      con.printf("fetch persistent    : %b\n", fetchPersistent);
+      if(evictionMaxEntries > 0) {
+         con.printf("eviction maxEntries : %d\n", evictionMaxEntries);
+      }
    }
 
    public static void main(String[] args) {
@@ -199,6 +227,10 @@ public class ClusteredFileStore {
       String location = ".";
       boolean passivation = false;
       boolean preload = false;
+      boolean shared = false;
+      boolean fetchInMemory = true;
+      boolean fetchPersistent = false;
+      int evictionMaxEntries = 0;
 
       int argc = 0;
       while (argc < args.length) {
@@ -218,8 +250,27 @@ public class ClusteredFileStore {
          } else if (args[argc].equals("-passivation")) {
             passivation = true;
             argc++;
+         } else if (args[argc].equals("-sharedStore")) {
+            shared = true;
+            argc++;
+         } else if (args[argc].equals("-fetchMemoryOff")) {
+            fetchInMemory = false;
+            argc++;
+         } else if (args[argc].equals("-fetchPersistent")) {
+            fetchPersistent = true;
+            argc++;
+         } else if (args[argc].equals("-eviction")) {
+            evictionMaxEntries = 2;
+            argc++;
+            try {
+               if(argc < args.length)
+                  evictionMaxEntries = Integer.parseInt(args[argc]);
+               argc++;
+            }catch(NumberFormatException e) {
+               //  ignore
+            }
          } else {
-            con.printf("option '%s' unknown", args[argc]);
+            con.printf("option '%s' unknown\n", args[argc]);
             System.exit(1);
          }
       }
@@ -230,7 +281,7 @@ public class ClusteredFileStore {
       } else {
          mode = syncmode ? CacheMode.DIST_SYNC : CacheMode.DIST_ASYNC;
       }
-      ClusteredFileStore main = new ClusteredFileStore(con, mode, location, preload, passivation);
+      ClusteredFileStore main = new ClusteredFileStore(con, mode, location, preload, passivation, shared, fetchInMemory, fetchPersistent, evictionMaxEntries);
       
       main.printMode();
       main.printConsoleHelp();

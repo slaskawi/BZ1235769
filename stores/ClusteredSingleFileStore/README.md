@@ -21,8 +21,9 @@ Build and Run
       create a folder to store the file of the SingleFileStore
       WORKAROUND  change the classpath of run.sh appropriate to your system
 
-          start run.sh -repl -async -preload -passivation -dir <>
+          JDG_LIB=/path/to/JDG/libraries startCache.sh [-repl] [-async] [-preload] [-passivation] [-sharedStore] [-fetchPersistent] [-fetchMemoryOff] -dir <>
 
+      By default a DIST_SYNC cache without preload and passivation is started. The transfer will fetch memory only.
       To run several instances it is indispensable to use different SingleFiles as it is not possible to share it, 
       use the "-dir <directory>" option and set different directories for each instance
       If no options are set the cache start with DIST.SYNC mode without passivation and preload. The __defaultCache.dat is 
