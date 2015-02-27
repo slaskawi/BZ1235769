@@ -24,14 +24,14 @@
          </properties>
       </transport>
    </global>
-   <namedCache name="FileCacheStore" start="EAGER">
+   <namedCache name="FileCacheStore">
       <clustering mode="replication">
          <sync />
          <stateTransfer chunkSize="10000" fetchInMemoryState="true" timeout="240000" />
       </clustering>
       <jmxStatistics enabled="true" />
       <eviction strategy="NONE" maxEntries="-1" />
-      <expiration lifespan="-1" maxIdle="-1" reaperEnabled="faise" wakeUpInterval="-1" />
+      <expiration lifespan="-1" maxIdle="-1" reaperEnabled="false" wakeUpInterval="-1" />
       <persistence passivation="false">
          <singleFile fetchPersistentState="true" ignoreModifications="false" shared="false" preload="true"
             purgeOnStartup="false" location="CacheStoreFiles">
