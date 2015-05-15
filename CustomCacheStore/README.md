@@ -20,9 +20,11 @@ Build the project
 Configure JDG
 -------------
 
+JDG 6.4.x and before
+--------------------
 1. add the SimpleCustomCacheStore as module via CLI
 
-    module add --name=org.infinispan.wfink.persistence --resources=CustomCacheStore.jar --dependencies=org.infinispan
+    module add --name=org.infinispan.wfink.persistence --resources=CustomCacheStore.jar --dependencies=org.infinispan,org.jboss.logging
 
 2. In client server mode this module need to be in the classpath for the infinispan.core module.
    change the modules/system/layers/base/org/infinispan/main/module.xml
@@ -32,7 +34,15 @@ Configure JDG
            <dependencies>
                <module name="org.infinispan.wfink.persistence"/>
 
-3. Add a cache with the store
+From JDG 6.5 on
+---------------
+1. Add the jar from module/target/CustomCacheStore.jar to the JDG/standalone/deployments
+   or use CLI to deploy it with 'deploy  module/target/CustomCacheStore.jar'
+   The server will show the successful deployment with the following message:
+     JBAS010287: Registering Deployed Cache Store service for store 'org.infinispan.wfink.persistence.SimpleCustomCacheStore'
+
+Add the cache configuration with the store
+------------------------------------------
 
 * Infinispan subsystem definition:
 

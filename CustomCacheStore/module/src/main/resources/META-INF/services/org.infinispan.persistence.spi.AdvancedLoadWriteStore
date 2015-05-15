@@ -1,0 +1,3 @@
+# This needs to be added to deploy the store as custom deployment from JDG 6.5 on
+
+org.infinispan.wfink.persistence.SimpleCustomCacheStore
