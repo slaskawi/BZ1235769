@@ -48,6 +48,13 @@
         <h:form id="response">
             <h:panelGrid columns="1">
                 <h:outputLabel value="#{cache.entries}" />
+                <h:outputLabel value="#{cache.size}" />
+            </h:panelGrid>
+            <h:panelGrid columns="4">
+                Cache size (in memeory Flag.SKIP_CACHE_LOAD) 
+                <h:outputLabel value="#{cache.sizeM}" />
+                 out of 
+                <h:outputLabel value="#{cache.size}" />
             </h:panelGrid>
         </h:form>
         <br /> <br />

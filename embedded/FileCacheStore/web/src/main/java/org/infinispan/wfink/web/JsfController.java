@@ -26,6 +26,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.infinispan.Cache;
+import org.infinispan.context.Flag;
 import org.infinispan.manager.DefaultCacheManager;
 import org.jboss.logging.Logger;
 
@@ -56,6 +57,7 @@ public class JsfController {
    
    @PreDestroy
    public void cleanUp() {
+      LOGGER.debug("Try to stop the cache manager!");
       manager.stop();
       manager = null;
    }
@@ -72,10 +74,13 @@ public class JsfController {
 
    public void add() {
       getEmbeddedCache().put(cacheView.getKey(), cacheView.getValue());
+      getSize();
    }
 
    public void get() {
-      String value = getEmbeddedCache().get(cacheView.getKey());
+      String key = cacheView.getKey();
+      LOGGER.info("Try to read key="+key);
+      String value = getEmbeddedCache().get(key);
       if(value==null) {
          cacheView.setValue("NOT AVAILABLE");
       }else{
@@ -85,6 +90,12 @@ public class JsfController {
 
    public void delete() {
       getEmbeddedCache().remove(cacheView.getKey());
+      getSize();
+   }
+   
+   public void getSize() {
+      cacheView.setSize(getEmbeddedCache().size());
+      cacheView.setSizeM(getEmbeddedCache().getAdvancedCache().withFlags(Flag.SKIP_CACHE_LOAD).size());
    }
 
    public void list() {
@@ -97,5 +108,6 @@ public class JsfController {
          result.append(" || ");
       }
       cacheView.setEntries(result.toString());
+      getSize();
    }
 }

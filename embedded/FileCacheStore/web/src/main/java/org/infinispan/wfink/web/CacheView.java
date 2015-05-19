@@ -16,7 +16,6 @@
  */
 package org.infinispan.wfink.web;
 
-import java.util.Map;
 
 /**
  * A container for the result of an EJB invocation. It will be used by the JsfController.
@@ -28,6 +27,16 @@ public class CacheView {
    private String key;
    private String value;
    private String entries;
+   private int size;
+   private int sizeM;
+
+   public int getSizeM() {
+      return sizeM;
+   }
+
+   public void setSizeM(int sizeM) {
+      this.sizeM = sizeM;
+   }
 
    public String getKey() {
       return key;
@@ -53,4 +62,11 @@ public class CacheView {
       this.entries = entries;
    }
 
+   public void setSize(int numOfEntries) {
+      size = numOfEntries;
+   }
+   
+   public int getSize() {
+      return size;
+   }
 }
