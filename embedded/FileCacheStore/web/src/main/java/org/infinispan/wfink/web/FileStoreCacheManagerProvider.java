@@ -45,6 +45,7 @@ public class FileStoreCacheManagerProvider {
 
          try {
             manager = new DefaultCacheManager(CONFIG, true);
+            log.info("CacheManager created : custer=" + manager.getClusterName() + " members: " + manager.getClusterMembers());
          } catch (IOException e) {
             log.log(Level.SEVERE, "Could not read " + CONFIG + " to create the FileStoreCacheManager", e);
          }
@@ -54,6 +55,7 @@ public class FileStoreCacheManagerProvider {
 
    @PreDestroy
    public void cleanUp() {
+      log.info("Try to stop the cache manager : custer=" + manager.getClusterName() + " members: " + manager.getClusterMembers());
       manager.stop();
       manager = null;
    }

@@ -48,6 +48,7 @@ public class JsfController {
     */
    @PostConstruct
    public void init() {
+      LOGGER.info("CacheManager : custer=" + manager.getClusterName() + " members: " + manager.getClusterMembers());
       initForm();
    }
    
@@ -57,7 +58,7 @@ public class JsfController {
    
    @PreDestroy
    public void cleanUp() {
-      LOGGER.debug("Try to stop the cache manager!");
+      LOGGER.debug("Try to stop the cache manager : custer=" + manager.getClusterName() + " members: " + manager.getClusterMembers());
       manager.stop();
       manager = null;
    }
