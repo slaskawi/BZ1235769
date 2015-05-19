@@ -27,6 +27,7 @@
    <namedCache name="FileCacheStore">
       <clustering mode="replication">
          <sync />
+         <partitionHandling enabled="true" />
          <stateTransfer chunkSize="10000" fetchInMemoryState="true" timeout="240000" />
       </clustering>
       <jmxStatistics enabled="true" />
