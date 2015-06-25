@@ -91,7 +91,7 @@
                     <archive>
                         <addMavenDescriptor>false</addMavenDescriptor>
                         <manifestEntries>
-                            <Dependencies>org.infinispan:jdg-6.4 services</Dependencies>
+                            <Dependencies>org.infinispan:jdg-6.5 services</Dependencies>
                         </manifestEntries>
                     </archive>
                 </configuration>
