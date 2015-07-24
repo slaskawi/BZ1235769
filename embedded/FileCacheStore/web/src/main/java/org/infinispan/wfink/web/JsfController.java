@@ -16,19 +16,16 @@
  */
 package org.infinispan.wfink.web;
 
-import java.util.HashMap;
+import org.infinispan.Cache;
+import org.infinispan.context.Flag;
+import org.infinispan.manager.EmbeddedCacheManager;
+import org.jboss.logging.Logger;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.enterprise.inject.Model;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import org.infinispan.Cache;
-import org.infinispan.context.Flag;
-import org.infinispan.manager.DefaultCacheManager;
-import org.jboss.logging.Logger;
 
 /**
  * A simple JSF controller to show how the EJB invocation on different servers.
@@ -41,26 +38,19 @@ public class JsfController {
    private CacheView cacheView;
    
    @Inject
-   private DefaultCacheManager manager;
+   private EmbeddedCacheManager manager;
 
    /**
     * Initialize the controller.
     */
    @PostConstruct
    public void init() {
-      LOGGER.info("CacheManager : custer=" + manager.getClusterName() + " members: " + manager.getClusterMembers());
+      LOGGER.info("CacheManager : custer=" + manager.getClusterName());
       initForm();
    }
    
    private Cache<String, String> getEmbeddedCache() {
       return manager.getCache("FileCacheStore");
-   }
-   
-   @PreDestroy
-   public void cleanUp() {
-      LOGGER.debug("Try to stop the cache manager : custer=" + manager.getClusterName() + " members: " + manager.getClusterMembers());
-      manager.stop();
-      manager = null;
    }
 
    public void initForm() {

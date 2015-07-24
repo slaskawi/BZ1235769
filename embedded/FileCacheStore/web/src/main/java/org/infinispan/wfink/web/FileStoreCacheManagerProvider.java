@@ -16,15 +16,15 @@
  */
 package org.infinispan.wfink.web;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.infinispan.manager.DefaultCacheManager;
+import org.infinispan.manager.EmbeddedCacheManager;
 
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
-
-import org.infinispan.manager.DefaultCacheManager;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Creates a DefaultCacheManager which is configured with a configuration file.
@@ -39,16 +39,20 @@ public class FileStoreCacheManagerProvider {
    private DefaultCacheManager manager;
 
    @Produces
-   public DefaultCacheManager getCacheManager() {
+   @ApplicationScoped
+   public EmbeddedCacheManager getCacheManager() {
       if (manager == null) {
          log.info("construct a FileStoreCacheManager");
 
          try {
             manager = new DefaultCacheManager(CONFIG, true);
+            System.out.println("#### created new manager hash: " + manager.hashCode());
             log.info("CacheManager created : custer=" + manager.getClusterName() + " members: " + manager.getClusterMembers());
          } catch (IOException e) {
             log.log(Level.SEVERE, "Could not read " + CONFIG + " to create the FileStoreCacheManager", e);
          }
+      } else {
+         System.out.println("#### No need to create new manager hash: " + manager.hashCode());
       }
       return manager;
    }
@@ -56,7 +60,9 @@ public class FileStoreCacheManagerProvider {
    @PreDestroy
    public void cleanUp() {
       log.info("Try to stop the cache manager : custer=" + manager.getClusterName() + " members: " + manager.getClusterMembers());
+      System.out.println("#### stopping manager: " + manager.hashCode());
       manager.stop();
+      log.info("Cache manager stopped");
       manager = null;
    }
 

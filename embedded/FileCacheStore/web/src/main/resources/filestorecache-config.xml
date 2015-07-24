@@ -27,17 +27,17 @@
    <namedCache name="FileCacheStore">
       <clustering mode="replication">
          <sync />
-         <partitionHandling enabled="true" />
-         <stateTransfer chunkSize="10000" fetchInMemoryState="true" timeout="240000" />
+         <!--<partitionHandling enabled="true" />-->
+         <!--<stateTransfer chunkSize="10000" fetchInMemoryState="true" timeout="240000" />-->
       </clustering>
       <jmxStatistics enabled="true" />
       <eviction strategy="LIRS" maxEntries="5" />
       <expiration lifespan="-1" maxIdle="-1" reaperEnabled="false" wakeUpInterval="10000" />
-      <persistence passivation="false">
-         <singleFile fetchPersistentState="true" ignoreModifications="false" shared="false" preload="true"
-            purgeOnStartup="false" location="CacheStoreFiles">
-            <async enabled="true" />
-         </singleFile>
-      </persistence>
+      <!--<persistence passivation="false">-->
+         <!--<singleFile fetchPersistentState="true" ignoreModifications="false" shared="false" preload="true"-->
+            <!--purgeOnStartup="false" location="CacheStoreFiles">-->
+            <!--<async enabled="true" />-->
+         <!--</singleFile>-->
+      <!--</persistence>-->
    </namedCache>
 </infinispan>
